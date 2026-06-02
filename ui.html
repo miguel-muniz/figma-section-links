@@ -1,0 +1,634 @@
+<style>
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--figma-color-bg);
+    color: var(--figma-color-text);
+    font: 12px/1.45 Inter, sans-serif;
+  }
+
+  main {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .section-header {
+    display: flex;
+    min-height: 32px;
+    align-items: center;
+  }
+
+  label {
+    display: grid;
+    gap: 6px;
+  }
+
+  select,
+  input,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  select,
+  input,
+  textarea {
+    width: 100%;
+    border: 1px solid var(--figma-color-border);
+    border-radius: 6px;
+    background: var(--figma-color-bg);
+    color: var(--figma-color-text);
+  }
+
+  select {
+    min-height: 32px;
+    padding: 0 8px;
+  }
+
+  input {
+    min-height: 32px;
+    padding: 0 8px;
+  }
+
+  textarea {
+    resize: vertical;
+    padding: 8px;
+    line-height: 1.4;
+  }
+
+  textarea:focus,
+  select:focus,
+  input:focus,
+  button:focus,
+  summary:focus {
+    outline: 2px solid var(--figma-color-border-selected);
+    outline-offset: 1px;
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .helper {
+    margin: 0;
+    color: var(--figma-color-text-secondary);
+    line-height: 1.35;
+  }
+
+  .label-text {
+    font-weight: 600;
+  }
+
+  .prefixes {
+    min-height: 84px;
+  }
+
+  .settings-row {
+    display: grid;
+    gap: 12px;
+  }
+
+  .divider {
+    width: calc(100% + 32px);
+    height: 1px;
+    margin: 0 -16px;
+    border: 0;
+    background: var(--figma-color-border);
+  }
+
+  .menu {
+    position: relative;
+  }
+
+  .menu summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    min-height: 32px;
+    cursor: pointer;
+    list-style: none;
+    border-radius: 6px;
+    color: var(--figma-color-text);
+  }
+
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu summary:hover {
+    background: var(--figma-color-bg-secondary);
+  }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .menu-content {
+    position: absolute;
+    z-index: 1;
+    top: 36px;
+    right: 0;
+    min-width: 132px;
+    border: 1px solid var(--figma-color-border);
+    border-radius: 6px;
+    padding: 4px;
+    background: var(--figma-color-bg);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+  }
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 28px;
+    justify-content: flex-start;
+    border-radius: 4px;
+    padding: 0 8px;
+    background: transparent;
+    color: var(--figma-color-text);
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .menu-item:hover {
+    background: var(--figma-color-bg-secondary);
+  }
+
+  .output {
+    flex: 1;
+    min-height: 156px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    white-space: pre;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  button {
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 0 12px;
+    min-height: 32px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .primary {
+    background: var(--figma-color-bg-brand);
+    color: var(--figma-color-text-onbrand);
+  }
+
+  .secondary {
+    background: var(--figma-color-bg-secondary);
+    color: var(--figma-color-text);
+  }
+
+</style>
+
+<main>
+  <header>
+    <h1>Settings</h1>
+    <details class="menu" id="settingsMenu">
+      <summary aria-label="Settings menu">
+        <svg class="menu-icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+          <circle cx="8" cy="3.5" r="1.25" fill="currentColor"></circle>
+          <circle cx="8" cy="8" r="1.25" fill="currentColor"></circle>
+          <circle cx="8" cy="12.5" r="1.25" fill="currentColor"></circle>
+        </svg>
+      </summary>
+      <div class="menu-content">
+        <button class="menu-item" id="resetButton" type="button">Reset settings</button>
+      </div>
+    </details>
+  </header>
+
+  <div class="settings-row">
+    <label>
+      <span class="label-text">Figma share URL</span>
+      <input id="fileUrlInput" type="url" spellcheck="false">
+      <span class="helper">Paste the share URL for the current Figma file.</span>
+    </label>
+
+    <label>
+      <span class="label-text">Output format</span>
+      <select id="formatSelect">
+        <option value="plain-text">Plain Text</option>
+        <option value="markdown-list">Markdown List</option>
+        <option value="markdown-table">Markdown Table</option>
+        <option value="html">HTML List</option>
+        <option value="html-table">HTML Table</option>
+        <option value="csv">CSV</option>
+        <option value="json">JSON</option>
+        <option value="yaml">YAML</option>
+        <option value="toml">TOML</option>
+      </select>
+    </label>
+
+    <label>
+      <span class="label-text">Sort order</span>
+      <select id="sortSelect">
+        <option value="layer-asc">Layer Order (First-&gt;Last)</option>
+        <option value="layer-desc">Layer Order (Last-&gt;First)</option>
+        <option value="alpha-asc">Alphabetical (A-&gt;Z)</option>
+        <option value="alpha-desc">Alphabetical (Z-&gt;A)</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="field">
+    <label for="prefixesInput" class="label-text">Ignored section prefixes</label>
+    <textarea
+      class="prefixes"
+      id="prefixesInput"
+      spellcheck="false"
+    ></textarea>
+    <p class="helper">Sections starting with these prefixes are skipped. The default is . and _. Use one prefix per line.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="field">
+    <div class="section-header">
+      <h1>Output</h1>
+    </div>
+    <textarea class="output" id="outputText" readonly spellcheck="false"></textarea>
+    <p class="helper" id="statusText"></p>
+  </div>
+
+  <div class="actions">
+    <div class="button-group">
+      <button class="secondary" id="cancelButton" type="button">Close</button>
+      <button class="secondary" id="refreshButton" type="button">Refresh</button>
+      <button class="primary" id="copyButton" type="button">Copy</button>
+    </div>
+  </div>
+</main>
+
+<script>
+  const state = {
+    sections: [],
+    totalSectionCount: 0,
+    pageName: '',
+  }
+
+  const formatSelect = document.getElementById('formatSelect')
+  const fileUrlInput = document.getElementById('fileUrlInput')
+  const sortSelect = document.getElementById('sortSelect')
+  const prefixesInput = document.getElementById('prefixesInput')
+  const outputText = document.getElementById('outputText')
+  const statusText = document.getElementById('statusText')
+  const settingsMenu = document.getElementById('settingsMenu')
+  const resetButton = document.getElementById('resetButton')
+  const refreshButton = document.getElementById('refreshButton')
+  const copyButton = document.getElementById('copyButton')
+  const cancelButton = document.getElementById('cancelButton')
+
+  let saveTimer
+  let statusTimer
+
+  const DEFAULT_PREFIXES = ['.', '_']
+  const DEFAULT_FORMAT = formatSelect.options[0].value
+  const DEFAULT_SORT_ORDER = sortSelect.options[0].value
+
+  window.onmessage = (event) => {
+    const message = event.data.pluginMessage
+
+    if (!message) {
+      return
+    }
+
+    if (message.type === 'initialize') {
+      fileUrlInput.value = message.fileUrl || ''
+      prefixesInput.value = message.ignoredPrefixes.join('\n')
+      formatSelect.value = getSelectValueOrDefault(formatSelect, message.outputFormat)
+      sortSelect.value = getSelectValueOrDefault(sortSelect, message.sortOrder)
+      return
+    }
+
+    if (message.type === 'section-links') {
+      state.sections = message.sections
+      state.totalSectionCount = message.totalSectionCount
+      state.pageName = message.pageName
+      renderOutput()
+    }
+  }
+
+  formatSelect.addEventListener('change', () => {
+    saveConfiguration()
+    renderOutput()
+  })
+  sortSelect.addEventListener('change', () => {
+    saveConfiguration()
+    renderOutput()
+  })
+
+  fileUrlInput.addEventListener('input', () => {
+    window.clearTimeout(saveTimer)
+    saveTimer = window.setTimeout(() => {
+      saveConfiguration()
+      requestSectionLinks()
+    }, 250)
+  })
+
+  prefixesInput.addEventListener('input', () => {
+    window.clearTimeout(saveTimer)
+    saveTimer = window.setTimeout(() => {
+      saveConfiguration()
+      requestSectionLinks()
+    }, 250)
+  })
+
+  document.addEventListener('click', (event) => {
+    if (settingsMenu.open && !settingsMenu.contains(event.target)) {
+      settingsMenu.removeAttribute('open')
+    }
+  })
+
+  resetButton.addEventListener('click', () => {
+    window.clearTimeout(saveTimer)
+    fileUrlInput.value = ''
+    formatSelect.value = DEFAULT_FORMAT
+    sortSelect.value = DEFAULT_SORT_ORDER
+    prefixesInput.value = DEFAULT_PREFIXES.join('\n')
+    saveConfiguration()
+    requestSectionLinks()
+    setStatus('Settings reset.')
+    settingsMenu.removeAttribute('open')
+  })
+
+  refreshButton.addEventListener('click', requestSectionLinks)
+  cancelButton.addEventListener('click', () => {
+    parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+  })
+
+  copyButton.addEventListener('click', async () => {
+    const value = outputText.value
+
+    if (!value) {
+      setStatus('Nothing to copy yet.')
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(value)
+      setStatus('Copied.')
+    } catch (_error) {
+      outputText.focus()
+      outputText.select()
+      document.execCommand('copy')
+      setStatus('Copied.')
+    }
+  })
+
+  function requestSectionLinks() {
+    setStatus('Scanning current page...')
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'generate',
+          fileUrl: fileUrlInput.value,
+          ignoredPrefixes: getPrefixes(),
+        },
+      },
+      '*',
+    )
+  }
+
+  function saveConfiguration() {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: 'save-configuration',
+          fileUrl: fileUrlInput.value,
+          ignoredPrefixes: getPrefixes(),
+          outputFormat: formatSelect.value,
+          sortOrder: sortSelect.value,
+        },
+      },
+      '*',
+    )
+  }
+
+  function getPrefixes() {
+    return prefixesInput.value
+      .split('\n')
+      .map((prefix) => prefix.trim())
+      .filter(Boolean)
+  }
+
+  function renderOutput() {
+    const sortedSections = sortSections(sortSelect.value, state.sections)
+    const output = formatSections(getSelectedFormat(), sortedSections)
+    outputText.value = output
+
+    setStatus(getOutputStatus(output))
+  }
+
+  function getOutputStatus(output) {
+    if (!output) {
+      if (!fileUrlInput.value.trim()) {
+        return 'Add a Figma share URL to generate external links.'
+      }
+
+      if (!isFigmaShareUrl(fileUrlInput.value)) {
+        return 'Enter a valid Figma file share URL.'
+      }
+
+      return 'No matching top-level sections found.'
+    }
+
+    const ignoredCount = state.totalSectionCount - state.sections.length
+    const sectionLabel = state.sections.length === 1 ? 'section' : 'sections'
+    const ignoredLabel = ignoredCount === 1 ? 'section' : 'sections'
+
+    return `${state.sections.length} top-level ${sectionLabel} included, ${ignoredCount} ${ignoredLabel} ignored.`
+  }
+
+  function getSelectedFormat() {
+    return formatSelect.value
+  }
+
+  function isFigmaShareUrl(value) {
+    return /figma\.com\/(?:file|design)\/[^/?#]+/.test(value.trim())
+  }
+
+  function getSelectValueOrDefault(select, value) {
+    const values = Array.from(select.options).map((option) => option.value)
+
+    return values.includes(value) ? value : select.options[0].value
+  }
+
+  function sortSections(sortOrder, sections) {
+    const sortedSections = [...sections]
+
+    if (sortOrder === 'layer-desc') {
+      return sortedSections.sort((sectionA, sectionB) => sectionB.layerIndex - sectionA.layerIndex)
+    }
+
+    if (sortOrder === 'alpha-asc') {
+      return sortedSections.sort((sectionA, sectionB) =>
+        sectionA.name.localeCompare(sectionB.name, undefined, { sensitivity: 'base', numeric: true }),
+      )
+    }
+
+    if (sortOrder === 'alpha-desc') {
+      return sortedSections.sort((sectionA, sectionB) =>
+        sectionB.name.localeCompare(sectionA.name, undefined, { sensitivity: 'base', numeric: true }),
+      )
+    }
+
+    return sortedSections.sort((sectionA, sectionB) => sectionA.layerIndex - sectionB.layerIndex)
+  }
+
+  function formatSections(format, sections) {
+    if (sections.length === 0) {
+      return ''
+    }
+
+    switch (format) {
+      case 'plain-text':
+        return sections.map((section) => `${section.name} - ${section.url}`).join('\n')
+      case 'markdown-table':
+        return [
+          '| Section | Link |',
+          '| --- | --- |',
+          ...sections.map((section) => `| ${escapeMarkdownTable(section.name)} | ${section.url} |`),
+        ].join('\n')
+      case 'html':
+        return [
+          '<ul>',
+          ...sections.map(
+            (section) =>
+              `  <li><a href="${escapeHtmlAttribute(section.url)}">${escapeHtmlText(section.name)}</a></li>`,
+          ),
+          '</ul>',
+        ].join('\n')
+      case 'html-table':
+        return [
+          '<table>',
+          '  <thead>',
+          '    <tr>',
+          '      <th>Section</th>',
+          '      <th>Link</th>',
+          '    </tr>',
+          '  </thead>',
+          '  <tbody>',
+          ...sections.map(
+            (section) =>
+              `    <tr><td>${escapeHtmlText(section.name)}</td><td><a href="${escapeHtmlAttribute(section.url)}">${escapeHtmlText(section.url)}</a></td></tr>`,
+          ),
+          '  </tbody>',
+          '</table>',
+        ].join('\n')
+      case 'csv':
+        return [
+          'Section,Link',
+          ...sections.map((section) => `${toCsvCell(section.name)},${toCsvCell(section.url)}`),
+        ].join('\n')
+      case 'json':
+        return JSON.stringify(
+          sections.map((section) => ({
+            name: section.name,
+            url: section.url,
+          })),
+          null,
+          2,
+        )
+      case 'yaml':
+        return [
+          'sections:',
+          ...sections.flatMap((section) => [
+            `  - name: ${toQuotedString(section.name)}`,
+            `    url: ${toQuotedString(section.url)}`,
+          ]),
+        ].join('\n')
+      case 'toml':
+        return sections
+          .flatMap((section) => [
+            '[[sections]]',
+            `name = ${toQuotedString(section.name)}`,
+            `url = ${toQuotedString(section.url)}`,
+          ])
+          .join('\n')
+      case 'markdown-list':
+      default:
+        return sections.map((section) => `- [${escapeMarkdownLinkText(section.name)}](${section.url})`).join('\n')
+    }
+  }
+
+  function escapeMarkdownLinkText(value) {
+    return value.replaceAll('\\', '\\\\').replaceAll('[', '\\[').replaceAll(']', '\\]')
+  }
+
+  function escapeMarkdownTable(value) {
+    return value.replaceAll('\\', '\\\\').replaceAll('|', '\\|').replaceAll('\n', ' ')
+  }
+
+  function escapeHtmlText(value) {
+    return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;')
+  }
+
+  function escapeHtmlAttribute(value) {
+    return escapeHtmlText(value)
+  }
+
+  function toCsvCell(value) {
+    return `"${value.replaceAll('"', '""')}"`
+  }
+
+  function toQuotedString(value) {
+    return JSON.stringify(value)
+  }
+
+  function setStatus(message) {
+    window.clearTimeout(statusTimer)
+    statusText.textContent = message
+
+    if (message === 'Copied.') {
+      statusTimer = window.setTimeout(() => {
+        statusText.textContent = getOutputStatus(outputText.value)
+      }, 1600)
+    }
+  }
+</script>
