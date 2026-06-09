@@ -302,6 +302,7 @@
 
 <script>
   const state = {
+    hasCopyableOutput: false,
     sections: [],
     totalSectionCount: 0,
     pageName: '',
@@ -400,7 +401,7 @@
   copyButton.addEventListener('click', async () => {
     const value = outputText.value
 
-    if (!value) {
+    if (!state.hasCopyableOutput) {
       setStatus('Nothing to copy yet.')
       return
     }
@@ -455,24 +456,29 @@
   function renderOutput() {
     const sortedSections = sortSections(sortSelect.value, state.sections)
     const output = formatSections(getSelectedFormat(), sortedSections)
+    state.hasCopyableOutput = output.length > 0
     outputText.value = output
 
-    setStatus(getOutputStatus(output))
+    setStatus(state.hasCopyableOutput ? getOutputStatus() : getOutputMessage())
   }
 
-  function getOutputStatus(output) {
-    if (!output) {
-      if (!fileUrlInput.value.trim()) {
-        return 'Add a Figma share URL to generate external links.'
-      }
-
-      if (!isFigmaShareUrl(fileUrlInput.value)) {
-        return 'Enter a valid Figma file share URL.'
-      }
-
-      return 'No matching top-level sections found.'
+  function getOutputMessage() {
+    if (!fileUrlInput.value.trim()) {
+      return '🛑 Add a Figma share URL to generate external links.'
     }
 
+    if (!isFigmaShareUrl(fileUrlInput.value)) {
+      return '🛑 Enter a valid Figma file share URL.'
+    }
+
+    if (state.totalSectionCount === 0) {
+      return '🛑 No sections found on this page. Section Links only works with Figma sections, not frames.'
+    }
+
+    return '🛑 All top-level sections were ignored by the configured prefixes.'
+  }
+
+  function getOutputStatus() {
     const ignoredCount = state.totalSectionCount - state.sections.length
     const sectionLabel = state.sections.length === 1 ? 'section' : 'sections'
     const ignoredLabel = ignoredCount === 1 ? 'section' : 'sections'
@@ -627,7 +633,7 @@
 
     if (message === 'Copied.') {
       statusTimer = window.setTimeout(() => {
-        statusText.textContent = getOutputStatus(outputText.value)
+        statusText.textContent = state.hasCopyableOutput ? getOutputStatus() : ''
       }, 1600)
     }
   }
